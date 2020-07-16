@@ -1,0 +1,2 @@
+DOUBAN_GROUP_BLACK_LIST = [
+]
