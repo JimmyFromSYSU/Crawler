@@ -12,7 +12,7 @@ from filters.SingleFileFilter import SingleFileFilter
 import re
 import argparse
 import logging
-from constants import LOGGER_FORMAT, CRAWLER_TYPE
+from constants import LOGGER_FORMAT, CRAWLER_TYPE, CRAWLER_FOLDER, FILTER_FOLDER
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
 
@@ -27,18 +27,6 @@ def print_discussion(file_path):
     with open(file_path) as json_file:
         discussion = json.load(json_file)
     print(discussion)
-
-
-# save_all_groups()
-
-# save_whitelist_groups()
-# print_whitelist_groups()
-
-# test_single_discussion_page()
-# print_discussion("/Users/zhiliu/Desktop/script/crawler/data/discussions/106955/169763419")
-
-# test_filter()
-# save_all_discussions()
 
 
 def get_args() -> argparse.Namespace:
@@ -67,8 +55,6 @@ if __name__ == "__main__":
         # TODO: move constants to configs.py
         SAVED_FILE_NAME = "深圳租房Groups.txt"
         ALLOWLIST_FILE_NAME = "深圳租房Groups_allowlist.txt"
-        CRAWLER_FOLDER = "data/crawler/"
-        FILTER_FOLDER = "data/filter/"
         CRAWLER_DOUBAN_GROUP_LIST_FOLDER = CRAWLER_FOLDER + "douban_group_list/"
         FILTER_DOUBAN_GROUP_LIST_FOLDER = FILTER_FOLDER + "douban_group_list/"
         limit = args.limit if args.limit else 50
@@ -80,3 +66,7 @@ if __name__ == "__main__":
         filter_.start()
         if args.save:
             filter_.save(FILTER_DOUBAN_GROUP_LIST_FOLDER, ALLOWLIST_FILE_NAME)
+    elif args.type == CRAWLER_TYPE.DOUBAN_DISCUSSION_LIST:
+        DATA_FOLDER = CRAWLER_FOLDER + CRAWLER_TYPE.DOUBAN_DISCUSSION_LIST + "/"
+        filter_ = Filter(DATA_FOLDER)
+        filter_.start()

@@ -13,49 +13,10 @@ import argparse
 import logging
 import sys
 from structs import DoubanGroup
-from constants import LOGGER_FORMAT, CRAWLER_TYPE
+from constants import LOGGER_FORMAT, CRAWLER_TYPE, CHROME_DRIVE_PATH
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
-
-CHROME_DRIVE_PATH = "./bin/chromedriver"
-
-WHITELIST_DOUBAN_GROUPS_FILE = "douban_groups_whitelist.txt"
-
-
-def test_single_discussion_page():
-    group = {
-        'name': '福田租房',
-        'link': 'https://www.douban.com/group/586502',
-        'id': '586502',
-    }
-    browser = webdriver.Chrome(CHROME_DRIVE_PATH)
-    link = group['link']
-    id_ = group['id']
-    discussions_crawler = DoubanGroupDiscussionsCrawler(f"{link}/discussion", id_, browser)
-    discussions_crawler.start()
-    browser.close()
-
-
-def save_all_discussions():
-    with open(WHITELIST_DOUBAN_GROUPS_FILE) as json_file:
-        groups = json.load(json_file)
-
-    print(f"total count: {len(groups)}")
-
-    browser = webdriver.Chrome(CHROME_DRIVE_PATH)
-    for group in groups:
-        link = group['link']
-        id_ = group['id']
-        discussions_crawler = DoubanGroupDiscussionsCrawler(f"{link}/discussion", id_, browser)
-        discussions_crawler.start()
-    browser.close()
-
-
-def print_discussion(file_path):
-    with open(file_path) as json_file:
-        discussion = json.load(json_file)
-    print(discussion)
 
 
 def get_args() -> argparse.Namespace:

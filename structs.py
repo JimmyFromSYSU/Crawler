@@ -20,3 +20,7 @@ DoubanDiscussion = namedtuple(
         "content",
     ],
 )
+
+DoubanDiscussionRent = namedtuple(
+    'DoubanDiscussionRent', DoubanDiscussion._fields + ('price',)
+)

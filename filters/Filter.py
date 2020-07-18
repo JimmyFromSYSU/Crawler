@@ -6,17 +6,7 @@ import re
 import json
 from typing import Optional
 import sys
-# discussions = {
-#     'title':
-#     'link':
-#     'discussion_id':
-#     'group_id':
-#     'author':
-#     'num_response':
-#     'last_update_time':
-#     'post_time':
-#     'content':
-# }
+from structs import DoubanDiscussion, DoubanDiscussionRent
 
 
 class Filter:
@@ -34,22 +24,20 @@ class Filter:
         return True
 
     def TEXT_CONTAIN(self, key_word: str, discussion) -> bool:
-        content = discussion['content']
-        title = discussion['title']
+        content = discussion.content
+        title = discussion.title
         return (
             re.search(key_word, title, re.IGNORECASE) or
             re.search(key_word, content, re.IGNORECASE)
         )
 
     def merge_condition(self, MUST_TRUE, MUST_FALSE) -> bool:
-        # print(MUST_TRUE)
         for item in MUST_TRUE:
             if item:
                 continue
             else:
                 return False
 
-        # print(MUST_FALSE)
         for item in MUST_FALSE:
             if item:
                 return False
@@ -96,7 +84,7 @@ class Filter:
         return price
 
     def filter(self, discussion) -> bool:
-        post_time = discussion['post_time']
+        post_time = discussion.post_time
         if post_time[0:10] < '2020-06-01':
             return False
 
@@ -135,40 +123,40 @@ class Filter:
     # TODO: all filter rules are hard coded for now, make this configerable.
     def process_single_file(self, file_path):
         with open(file_path) as json_file:
-            discussion = json.load(json_file)
+            discussion = DoubanDiscussion._make(json.load(json_file))
         if self.filter(discussion):
-            title = discussion['title']
-            content = discussion['content']
-            author = discussion['author']
-            # link = discussion['link']
+            title = discussion.title
+            content = discussion.content
+            author = discussion.author
             price = self.extract_price(content)
             if price is None:
                 price = self.extract_title_price(title)
 
             if price is None or (price >= 3000 or price <= 500):
                 if author not in self.authors:
-                    discussion['price'] = price
+                    # discussion.price = price
+                    # TODO: make the tuple to dict/namedtuple for (price, )
+                    discussion = DoubanDiscussionRent(
+                        **discussion._asdict(), price=price
+                    )
                     self.discussions.append(discussion)
                     self.authors.add(author)
 
-
     def print_discussions(self):
-        self.discussions = sorted(self.discussions, key=lambda discussion: discussion['post_time'])
-        # self.discussions = sorted(self.discussions, key=lambda discussion: discussion['last_update_time'])
+        self.discussions = sorted(self.discussions, key=lambda discussion: discussion.post_time)
         count = 0
         for discussion in self.discussions:
-            author = discussion['author']
-            title = discussion['title']
-            content = discussion['content']
-            link = discussion['link']
-            post_time = discussion['post_time']
-            last_update_time = discussion['last_update_time']
-            price = discussion['price']
+            author = discussion.author
+            title = discussion.title
+            content = discussion.content
+            link = discussion.link
+            post_time = discussion.post_time
+            last_update_time = discussion.last_update_time
+            price = discussion.price
             count = count + 1
             # print(f"{str(count).zfill(4)} {post_time} 价格: {price}元/月 {title}: {link}")
-            print(f"{post_time[0:10]} 价格: {price}元/月 ({author}) \t {title}: {link}\n")
+            print(f"\n{post_time[0:10]} 价格: {price}元/月 ({author}) \t {title}: {link}")
             # print(f"{str(count).zfill(4)} {last_update_time} 价格: {price}元/月 {title}: {link}")
-
 
     def traverse_all_files(self, process):
         self.discussions = []
@@ -182,7 +170,7 @@ class Filter:
             for discussion_file in discussion_files:
                 discussion_file_path = group_path + discussion_file
                 process(discussion_file_path)
-
+        self.discussions = self.discussions[0:self.limit]
         self.print_discussions()
 
     def start(self):
