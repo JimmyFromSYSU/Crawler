@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 from typing import Optional
 from bs4 import BeautifulSoup
-from MultiPagesCrawler import MultiPagesCrawler
+from .MultiPagesCrawler import MultiPagesCrawler
 import re
 from os import path
 from pathlib import Path

@@ -26,6 +26,12 @@ class Filter:
         self.discussions = []
         self.authors = set()
 
+    def filter_by_blocklist(self, text:str, blocklist) -> bool:
+        for keyword in blocklist:
+            if text.find(keyword) >= 0:
+                return False
+        return True
+
     def TEXT_CONTAIN(self, key_word: str, discussion) -> bool:
         content = discussion['content']
         title = discussion['title']
