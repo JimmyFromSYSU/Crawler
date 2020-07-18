@@ -12,8 +12,9 @@ from filters.SingleFileFilter import SingleFileFilter
 import re
 import argparse
 import logging
+from constants import LOGGER_FORMAT
 logger = logging.getLogger()
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(name)s/%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
 
 
 def test_filter():
@@ -52,6 +53,9 @@ def get_args() -> argparse.Namespace:
         "--format", help="The format of the data to be filtered, for example, douban_group_list", required=True
     )
     parser.add_argument(
+        "--limit", help="The limit of output result", required=False, type=int
+    )
+    parser.add_argument(
         "--save",
         help="Save the filtered resultr",
         required=False,
@@ -72,10 +76,11 @@ if __name__ == "__main__":
         FILTER_FOLDER = "data/filter/"
         CRAWLER_DOUBAN_GROUP_LIST_FOLDER = CRAWLER_FOLDER + "douban_group_list/"
         FILTER_DOUBAN_GROUP_LIST_FOLDER = FILTER_FOLDER + "douban_group_list/"
+        limit = args.limit if args.limit else 50
         filter_ = SingleFileFilter(
             CRAWLER_DOUBAN_GROUP_LIST_FOLDER,
             SAVED_FILE_NAME,
-            limit=50,
+            limit=limit,
         )
         filter_.start()
         if args.save:

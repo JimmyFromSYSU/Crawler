@@ -4,11 +4,14 @@ from typing import Optional
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import logging
+import sys
+from constants import LOGGER_FORMAT
+
 logger = logging.getLogger()
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(name)s/%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
 
 class MultiPagesCrawler:
-    def __init__(self, url: str, browser, max_pages: int=9999999):
+    def __init__(self, url: str, browser, max_pages: int=sys.maxsize):
         self.url = url
         self.browser = browser
         self.max_pages = max_pages

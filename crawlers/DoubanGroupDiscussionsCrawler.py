@@ -7,14 +7,14 @@ import re
 from os import path
 from pathlib import Path
 import json
+import sys
 
 
 class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
-    def __init__(self, url: str, group_id: str, browser):
-        super().__init__(url, browser)
+    def __init__(self, url: str, group_id: str, browser, max_pages: int=sys.maxsize):
+        super().__init__(url, browser, max_pages)
         self.discussions = []
         self.group_id = group_id
-
 
     def rows_to_discussions(self, trs):
         trs = [tr for tr in trs if 'th' not in tr.attrs['class']]
@@ -32,7 +32,6 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
                 'last_update_time': self.content(tds[3]),
             })
 
-
     def next_url(self, soup) -> Optional[str]:
         next_span = soup.body.find("span", class_="next")
         if next_span:
@@ -40,9 +39,6 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
             if next_link:
                 return next_link['href']
         return None
-
-    def get_max_pages(self):
-        return 3
 
     def print_discussion(self, discussion):
         title = discussion['title']
@@ -55,7 +51,6 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
         soup = BeautifulSoup(page['page_source'], "html.parser")
         return soup
 
-
     def get_discussion_file_path(self, discussion):
         dir_ = self.get_discussion_file_dir(discussion)
         discussion_id = discussion['discussion_id']
@@ -63,8 +58,7 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
 
     def get_discussion_file_dir(self, discussion):
         group_id = discussion['group_id']
-        return f"data/discussions/{group_id}"
-
+        return f"data/crawler/douban_discussion_list/{group_id}"
 
     def process_discussion_page(self, soup, discussion):
         post_time_span = soup.find(class_="topic-doc").find("span", class_="color-green")
@@ -75,7 +69,6 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
         with open(self.get_discussion_file_path(discussion), 'w+') as outfile:
             json.dump(discussion, outfile)
 
-
     def process_page(self, soup) -> bool:
         content = soup.find(id="content")
         rows = content.find_all('tr')
@@ -84,7 +77,7 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
             file_path_str = self.get_discussion_file_path(discussion)
             p = Path(file_path_str)
             if p.exists():
-                print(f"ignore {file_path_str}")
+                logger.info(f"ignore {file_path_str}")
                 continue
             soup = self.fetch_discussion_page(discussion)
             self.process_discussion_page(soup, discussion)
