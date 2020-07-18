@@ -132,7 +132,7 @@ class Filter:
 
         return self.merge_condition(MUST_TRUE, MUST_FALSE)
 
-
+    # TODO: all filter rules are hard coded for now, make this configerable.
     def process_single_file(self, file_path):
         with open(file_path) as json_file:
             discussion = json.load(json_file)

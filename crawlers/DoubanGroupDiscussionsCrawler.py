@@ -8,6 +8,10 @@ from os import path
 from pathlib import Path
 import json
 import sys
+import logging
+from constants import CRAWLER_FOLDER, CRAWLER_TYPE, LOGGER_FORMAT
+logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
 
 
 class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
@@ -22,6 +26,7 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
             tds = tr.find_all('td')
             title_link = tds[0].find('a')
             author_link = tds[1].find('a')
+            # TODO: make a namedtuple for discussions
             self.discussions.append({
                 'title': self.content(title_link).strip(),
                 'link': title_link['href'],
@@ -40,11 +45,6 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
                 return next_link['href']
         return None
 
-    def print_discussion(self, discussion):
-        title = discussion['title']
-        link = discussion['link']
-        print(f"{title}: {link}")
-
     def fetch_discussion_page(self, discussion):
         url = discussion['link']
         page = self.fetch(url)
@@ -58,7 +58,7 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
 
     def get_discussion_file_dir(self, discussion):
         group_id = discussion['group_id']
-        return f"data/crawler/douban_discussion_list/{group_id}"
+        return f"{CRAWLER_FOLDER}/{CRAWLER_TYPE.DOUBAN_DISCUSSION_LIST}/{group_id}"
 
     def process_discussion_page(self, soup, discussion):
         post_time_span = soup.find(class_="topic-doc").find("span", class_="color-green")

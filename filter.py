@@ -12,7 +12,7 @@ from filters.SingleFileFilter import SingleFileFilter
 import re
 import argparse
 import logging
-from constants import LOGGER_FORMAT
+from constants import LOGGER_FORMAT, CRAWLER_TYPE
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
 
@@ -41,16 +41,11 @@ def print_discussion(file_path):
 # save_all_discussions()
 
 
-class DATA_FORMAT:
-    DOUBAN_GROUP_LIST =  'douban_group_list'
-    DOUBAN_DISCUSSION_LIST = 'douban_discussion_list'
-
-
 def get_args() -> argparse.Namespace:
     logger.info("Parse arguments.")
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--format", help="The format of the data to be filtered, for example, douban_group_list", required=True
+        "--type", help="The format of the data to be filtered, for example, douban_group_list", required=True
     )
     parser.add_argument(
         "--limit", help="The limit of output result", required=False, type=int
@@ -68,7 +63,7 @@ if __name__ == "__main__":
     args = get_args()
     logger.info(args)
 
-    if args.format == DATA_FORMAT.DOUBAN_GROUP_LIST:
+    if args.type == CRAWLER_TYPE.DOUBAN_GROUP_LIST:
         # TODO: move constants to configs.py
         SAVED_FILE_NAME = "深圳租房Groups.txt"
         ALLOWLIST_FILE_NAME = "深圳租房Groups_allowlist.txt"

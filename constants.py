@@ -2,5 +2,9 @@
 # -*- coding: UTF-8 -*-
 
 LOGGER_FORMAT = '[%(asctime)s] %(message)s'
-DOUBAN_GROUP_BLACK_LIST = [
-]
+CRAWLER_FOLDER = "data/crawler/"
+FILTER_FOLDER = "data/filter/"
+
+class CRAWLER_TYPE:
+    DOUBAN_GROUP_LIST =  'douban_group_list'
+    DOUBAN_DISCUSSION_LIST = 'douban_discussion_list'

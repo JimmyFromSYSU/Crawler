@@ -17,6 +17,7 @@ class SingleFileFilter(Filter):
         self.file_name = file_name
         self.allowlist_groups = []
 
+    # TODO: all filter rules are hard coded for now, make this configerable.
     def process_single_file(self, file_path):
         with open(file_path) as json_file:
             groups = [DoubanGroup._make(group) for group in json.load(json_file)]
