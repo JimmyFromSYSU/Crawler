@@ -72,7 +72,11 @@ if __name__ == "__main__":
         FILTER_FOLDER = "data/filter/"
         CRAWLER_DOUBAN_GROUP_LIST_FOLDER = CRAWLER_FOLDER + "douban_group_list/"
         FILTER_DOUBAN_GROUP_LIST_FOLDER = FILTER_FOLDER + "douban_group_list/"
-        filter_ = SingleFileFilter(CRAWLER_DOUBAN_GROUP_LIST_FOLDER, SAVED_FILE_NAME)
+        filter_ = SingleFileFilter(
+            CRAWLER_DOUBAN_GROUP_LIST_FOLDER,
+            SAVED_FILE_NAME,
+            limit=50,
+        )
         filter_.start()
         if args.save:
             filter_.save(FILTER_DOUBAN_GROUP_LIST_FOLDER, ALLOWLIST_FILE_NAME)

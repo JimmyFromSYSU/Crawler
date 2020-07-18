@@ -9,10 +9,11 @@ from .Filter import Filter
 from pathlib import Path
 import json
 from structs import DoubanGroup
+import sys
 
 class SingleFileFilter(Filter):
-    def __init__(self, dir_path: str, file_name: str):
-        super().__init__(dir_path)
+    def __init__(self, dir_path: str, file_name: str, limit=sys.maxsize):
+        super().__init__(dir_path, limit)
         self.file_name = file_name
         self.allowlist_groups = []
 
@@ -20,26 +21,22 @@ class SingleFileFilter(Filter):
         with open(file_path) as json_file:
             groups = [DoubanGroup._make(group) for group in json.load(json_file)]
 
-        whitelist_groups = []
         for group in groups:
             name = group.name
             blacklist = [
-                '南山', '宝安', '龙华', '龙岗', '罗湖', '广州', '同志', '妹纸',
-                '深圳房租太他妈高了党',
-                '女人',
-                '智租宝，让信息可以共享',
-                '深圳豆瓣',
-                '深圳拼友',
-                '大学',
-                '旅游',
-                '90后',
-                '深圳租房防坑联盟',
-                '拉拉',
-                '深圳信息衣食住行吃喝玩乐',
-                '深圳视窗',
+                # Other districts
+                '南山', '宝安', '龙华', '龙岗', '罗湖', '罗宝', '蛇口', '坂田', '光明新区', '西丽', '广州',
+                # More
+                '同志',
             ]
             if self.filter_by_blocklist(name, blacklist):
                 self.allowlist_groups.append(group)
+
+        # Sort by member_num and apply limit
+        self.allowlist_groups = sorted(
+            self.allowlist_groups,
+            key=lambda g: -int(g.member_num)
+        )[0: self.limit]
 
         self.print()
 

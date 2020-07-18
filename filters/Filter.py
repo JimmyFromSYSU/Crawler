@@ -5,7 +5,7 @@ from os.path import isfile, join
 import re
 import json
 from typing import Optional
-
+import sys
 # discussions = {
 #     'title':
 #     'link':
@@ -20,8 +20,9 @@ from typing import Optional
 
 
 class Filter:
-    def __init__(self, dir_path: str):
+    def __init__(self, dir_path: str, limit=sys.maxsize):
         self.dir_path = dir_path.rstrip('/') + '/'
+        self.limit = limit
         # print(self.dir_path)
         self.discussions = []
         self.authors = set()
