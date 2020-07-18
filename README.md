@@ -8,7 +8,7 @@ python3 crawler.py --type douban_group_list
 
 (2) Filter the douban groups and limit the number of groups to crawl
 ```
-python3 filter.py --type douban_group_list --limit 3
+python3 filter.py --type douban_group_list --limit 3  --save
 ```
 
 (3) Crawl all discussions in the first page of the groups in the allowlist
