@@ -33,7 +33,7 @@ class DoubanGroupsCrawler(MultiPagesCrawler):
                     name=" ".join(link.contents),
                     link=link['href'],
                     id=self.last_section(link['href']),
-                    # <div class="info">264397 个深圳租房-南山租房 在此聚集 </div>
+                    # Example: <div class="info">264397 个深圳租房-南山租房 在此聚集 </div>
                     member_num=self.content(info).split(" ")[0],
                 )
             )

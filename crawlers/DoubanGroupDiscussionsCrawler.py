@@ -27,7 +27,6 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
             tds = tr.find_all('td')
             title_link = tds[0].find('a')
             author_link = tds[1].find('a')
-            # TODO: make a namedtuple for discussions
             self.discussions.append(DoubanDiscussion(
                 title=self.content(title_link).strip(),
                 link=title_link['href'],

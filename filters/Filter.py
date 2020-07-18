@@ -13,7 +13,6 @@ class Filter:
     def __init__(self, dir_path: str, limit=sys.maxsize):
         self.dir_path = dir_path.rstrip('/') + '/'
         self.limit = limit
-        # print(self.dir_path)
         self.discussions = []
         self.authors = set()
 
@@ -89,6 +88,7 @@ class Filter:
             return False
 
         location = "福田"
+        # 卓越时代广场：https://ditu.amap.com/dir?from%5Bid%5D=BV10243512-from&from%5Bname%5D=%E7%A6%8F%E7%94%B0%E5%8F%A3%E5%B2%B8(%E5%9C%B0%E9%93%81%E7%AB%99)&from%5Blnglat%5D=114.069273%2C22.515737&from%5Bmodxy%5D=114.069273%2C22.515737&from%5Bpoitype%5D=150500&from%5Badcode%5D=440304&to%5Bname%5D=%E5%8D%93%E8%B6%8A%C2%B7%E6%97%B6%E4%BB%A3%E5%B9%BF%E5%9C%BA&to%5Blnglat%5D=114.057131%2C22.534121&to%5Bid%5D=B02F37T14X-to&to%5Bpoitype%5D=120201&to%5Badcode%5D=440300&to%5Bmodxy%5D=114.057252%2C22.534603&type=bus&policy=0&dateTime=now
         # 地铁口：https://www.amap.com/dir?from%5Bid%5D=BV10249966&from%5Bname%5D=%E8%8E%B2%E8%8A%B1%E6%9D%91(%E5%9C%B0%E9%93%81%E7%AB%99)&from%5Blnglat%5D=114.067829%2C22.548646&from%5Bmodxy%5D=114.067829%2C22.548646&from%5Bpoitype%5D=150500&from%5Badcode%5D=440304&to%5Bname%5D=%E5%8D%93%E8%B6%8A%C2%B7%E6%97%B6%E4%BB%A3%E5%B9%BF%E5%9C%BA&to%5Blnglat%5D=114.057131%2C22.534121&to%5Bid%5D=B02F37T14X-to&to%5Bpoitype%5D=120201&to%5Badcode%5D=440300&to%5Bmodxy%5D=114.057252%2C22.534603&type=car&policy=1
         # 石厦：6mins
         # 岗厦: 7mins
@@ -134,7 +134,6 @@ class Filter:
 
             if price is None or (price >= 3000 or price <= 500):
                 if author not in self.authors:
-                    # discussion.price = price
                     # TODO: make the tuple to dict/namedtuple for (price, )
                     discussion = DoubanDiscussionRent(
                         **discussion._asdict(), price=price
@@ -154,9 +153,7 @@ class Filter:
             last_update_time = discussion.last_update_time
             price = discussion.price
             count = count + 1
-            # print(f"{str(count).zfill(4)} {post_time} 价格: {price}元/月 {title}: {link}")
-            print(f"\n{post_time[0:10]} 价格: {price}元/月 ({author}) \t {title}: {link}")
-            # print(f"{str(count).zfill(4)} {last_update_time} 价格: {price}元/月 {title}: {link}")
+            print(f"{post_time[0:10]} 价格: {price}元/月 ({author}) {title}: {link}")
 
     def traverse_all_files(self, process):
         self.discussions = []

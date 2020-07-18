@@ -1,10 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-##########################################
-# Filter with input of a single file
-##########################################
-
 from .Filter import Filter
 from pathlib import Path
 import json

@@ -13,7 +13,7 @@ import argparse
 import logging
 import sys
 from structs import DoubanGroup
-from constants import LOGGER_FORMAT, CRAWLER_TYPE, CHROME_DRIVE_PATH
+from constants import LOGGER_FORMAT, CRAWLER_TYPE, CHROME_DRIVE_PATH, CRAWLER_FOLDER, FILTER_FOLDER
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
@@ -31,28 +31,22 @@ def get_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-CRAWLER_FOLDER = "data/crawler"
-FILTER_FOLDER = "data/filter/"
-
-
-# TODO: fix the structure for all obj such as group/discussion
 if __name__ == "__main__":
     args = get_args()
     logger.info(args)
     max_pages = args.limit if args.limit else sys.maxsize
 
     if args.type == CRAWLER_TYPE.DOUBAN_GROUP_LIST:
-        # TODO: move constants to configs.py
+        # TODO: move constants to constants.py/configs.py
         browser = webdriver.Chrome(CHROME_DRIVE_PATH)
         SHENZHEN_HOURSE_GROUP_LIST_URL = "https://www.douban.com/group/search?cat=1019&q=%E6%B7%B1%E5%9C%B3+%E7%A7%9F%E6%88%BF"
         SAVED_FILE_NAME = "深圳租房Groups.txt"
-
         crawler = DoubanGroupsCrawler(SHENZHEN_HOURSE_GROUP_LIST_URL, browser, max_pages=max_pages)
         crawler.start()
         browser.close()
         crawler.save(f"{CRAWLER_FOLDER}/{args.type}", SAVED_FILE_NAME)
     elif args.type == CRAWLER_TYPE.DOUBAN_DISCUSSION_LIST:
-        # TODO: move constants to configs.py
+        # TODO: move constants to constants.py/configs.py
         browser = webdriver.Chrome(CHROME_DRIVE_PATH)
         FILTER_DOUBAN_GROUP_LIST_FOLDER = FILTER_FOLDER + CRAWLER_TYPE.DOUBAN_GROUP_LIST + "/"
         ALLOWLIST_FILE_NAME = "深圳租房Groups_allowlist.txt"
