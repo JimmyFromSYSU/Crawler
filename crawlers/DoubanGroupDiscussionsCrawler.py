@@ -9,6 +9,7 @@ from pathlib import Path
 import json
 import sys
 import logging
+from structs import DoubanDiscussion
 from constants import CRAWLER_FOLDER, CRAWLER_TYPE, LOGGER_FORMAT
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format=LOGGER_FORMAT)
@@ -27,15 +28,17 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
             title_link = tds[0].find('a')
             author_link = tds[1].find('a')
             # TODO: make a namedtuple for discussions
-            self.discussions.append({
-                'title': self.content(title_link).strip(),
-                'link': title_link['href'],
-                'discussion_id': self.last_section(title_link['href']),
-                'group_id': self.group_id,
-                'author': self.content(author_link),
-                'num_response': self.content(tds[2]),
-                'last_update_time': self.content(tds[3]),
-            })
+            self.discussions.append(DoubanDiscussion(
+                title=self.content(title_link).strip(),
+                link=title_link['href'],
+                discussion_id=self.last_section(title_link['href']),
+                group_id=self.group_id,
+                author=self.content(author_link),
+                num_response=self.content(tds[2]),
+                last_update_time=self.content(tds[3]),
+                post_time=None,
+                content=None
+            ))
 
     def next_url(self, soup) -> Optional[str]:
         next_span = soup.body.find("span", class_="next")
@@ -46,25 +49,26 @@ class DoubanGroupDiscussionsCrawler(MultiPagesCrawler):
         return None
 
     def fetch_discussion_page(self, discussion):
-        url = discussion['link']
+        url = discussion.link
         page = self.fetch(url)
         soup = BeautifulSoup(page['page_source'], "html.parser")
         return soup
 
     def get_discussion_file_path(self, discussion):
         dir_ = self.get_discussion_file_dir(discussion)
-        discussion_id = discussion['discussion_id']
+        discussion_id = discussion.discussion_id
         return f"{dir_}/{discussion_id}"
 
     def get_discussion_file_dir(self, discussion):
-        group_id = discussion['group_id']
+        group_id = discussion.group_id
         return f"{CRAWLER_FOLDER}/{CRAWLER_TYPE.DOUBAN_DISCUSSION_LIST}/{group_id}"
 
     def process_discussion_page(self, soup, discussion):
         post_time_span = soup.find(class_="topic-doc").find("span", class_="color-green")
-        discussion['post_time'] = self.content(post_time_span)
-        discussion['content'] = soup.find(class_="topic-content").get_text()
-
+        discussion = discussion._replace(
+            post_time=self.content(post_time_span),
+            content=soup.find(class_="topic-content").get_text()
+        )
         Path(self.get_discussion_file_dir(discussion)).mkdir(parents=True, exist_ok=True)
         with open(self.get_discussion_file_path(discussion), 'w+') as outfile:
             json.dump(discussion, outfile)
